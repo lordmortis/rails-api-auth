@@ -29,7 +29,7 @@ module ActsAsApiAuthable
         create_file dst do
           data = File.read(find_in_source_paths('migration.rb'))
           data.gsub!("_CamelName_", @camel)
-          data.gsub!("_snake_case_", @snake_case)
+          data.gsub!("_snake_case_", @snake_case.pluralize)
           data.gsub!("_RAILS_VERSION_", Rails.version.split(".")[0..1].join('.'))
           data
         end

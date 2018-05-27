@@ -4,6 +4,8 @@ module ActsAsApiAuthable
       extend ActiveSupport::Concern
 
       included do
+        ActsAsApiAuthable::Strategies.Setup
+
         belongs_to :authable, polymorphic: true
 
         before_create :generate_id, :generate_secret, :set_expiry

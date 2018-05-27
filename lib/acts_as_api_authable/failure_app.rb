@@ -1,5 +1,5 @@
 module ActsAsApiAuthable
-  class AuthTokenFailure < ActionController::Metal
+  class FailureApp < ActionController::Metal
     def self.call(env)
       @respond ||= action(:respond)
       @respond.call(env)

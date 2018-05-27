@@ -21,9 +21,4 @@ ActsAsApiAuthable.Configure do |config|
 
   # An array of models that we can authorize
   config.authable_models = []
-
-  # the model that the session information is contained in
-  # you should create either the default ("Session") or another model via
-  # bin/rails g acts_as_api_authable:create_session_model
-  config.session_model = Session
 end

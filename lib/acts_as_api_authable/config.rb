@@ -1,7 +1,6 @@
 class ActsAsApiAuthable::Config
-	attr_reader :unsigned_requests_allowed, :invalid_time_allowed,
-		:unsigned_requests_allowed, :max_request_age, :max_clock_skew,
-		:authable_models, :allowed_types, :valid, :session_model
+	attr_reader :max_request_age, :max_clock_skew,
+		:authable_models, :allowed_types, :valid
 
 	def initialize(attrs)
 		@valid = true
@@ -9,8 +8,7 @@ class ActsAsApiAuthable::Config
 		@allowed_types = []
 		[
 			:unsigned_requests_allowed, :invalid_time_allowed,
-			:unsigned_requests_allowed, :max_request_age,
-			:max_clock_skew,
+			:max_request_age, :max_clock_skew,
 		].each do |attr_name|
 			instance_variable_set("@#{attr_name}", attrs[attr_name])
 		end
@@ -53,14 +51,27 @@ class ActsAsApiAuthable::Config
 			@valid = false
 		end
 
+=begin
 		if attrs.session_model.blank?
 			print "No Session model specified"
 			@valid = false
 		else
 			valid = attrs.session_model.is_a?(Class)
 			@session_model = attrs.session_model if (valid)
-
 		end
+=end
+	end
+
+	def unsigned_requests_allowed
+		Rails.env.production? ? true : @unsigned_requests_allowed
+	end
+
+	def invalid_time_allowed
+		Rails.env.production? ? true : @invalid_time_allowed
+	end
+
+	def valid?
+		valid
 	end
 
 private

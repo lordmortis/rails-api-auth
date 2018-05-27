@@ -1,5 +1,9 @@
+require "warden"
+
 require "acts_as_api_authable/railtie"
 require "acts_as_api_authable/config"
+require "acts_as_api_authable/strategies"
+require "acts_as_api_authable/failure_app"
 
 module ActsAsApiAuthable
   def self.Configure
@@ -10,12 +14,18 @@ module ActsAsApiAuthable
       max_clock_skew: 5,
       authable_models: [],
       allowed_types: [:signature, :http_only_cookie],
-      session_model: Session,
     })
 
     yield config
 
     ActsAsApiAuthable.Configuration = Config.new(config)
+
+    return unless ActsAsApiAuthable.Configuration.valid?
+
+    Rails.application.config.middleware.insert_before Rack::Head, Warden::Manager do |manager|
+      manager.default_strategies ActsAsApiAuthable.Configuration.allowed_types
+     manager.failure_app = ActsAsApiAuthable::FailureApp
+    end
   end
 
   def self.Configuration
