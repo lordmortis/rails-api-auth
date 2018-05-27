@@ -4,7 +4,7 @@ module ActsAsApiAuthable
       source_root File.expand_path('templates', __dir__)
 
       def copy_initializer
-        template 'acts_as_api_authable.rb', 'config/initializers/acts_as_api_authable.rb'
+        copy_file 'acts_as_api_authable.rb', 'config/initializers/acts_as_api_authable.rb'
       end
     end
   end

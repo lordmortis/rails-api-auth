@@ -10,6 +10,7 @@ module ActsAsApiAuthable
       max_clock_skew: 5,
       authable_models: [],
       allowed_types: [:signature, :http_only_cookie],
+      session_model: Session,
     })
 
     yield config

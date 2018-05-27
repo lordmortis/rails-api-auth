@@ -18,4 +18,5 @@ Gem::Specification.new do |s|
 
   s.add_dependency "rails", "~> 5.2.0"
   s.add_dependency "warden", "~> 1.2.0"
+  s.add_dependency "uuidtools", "~> 2.1.5"
 end

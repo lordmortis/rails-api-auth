@@ -1,0 +1,8 @@
+Description:
+    Creates the migration for the login session model. It will create the "Session" model by default.
+
+Example:
+    rails generate acts_as_api_authable:create_session_model UserToken
+
+    This will create:
+      db/migrate/<date/time>_create_user_token.rb
