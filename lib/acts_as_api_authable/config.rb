@@ -6,7 +6,7 @@ class ActsAsApiAuthable::Config
 	def initialize(attrs)
 		@authable_models = []
 		[
-			:unsigned_requests_allowed, :invalid_time_allowed, 
+			:unsigned_requests_allowed, :invalid_time_allowed,
 			:unsigned_requests_allowed, :max_request_age,
 			:max_clock_skew
 		].each do |attr_name|
@@ -16,10 +16,13 @@ class ActsAsApiAuthable::Config
 		attrs.authable_models.each do |klass|
 			valid = klass.is_a?(Class)
 			if valid
-				valid = klass.new.is_a? ActiveRecord::Base
+				begin # need this in case migrations/setup are being run
+					valid = klass.new.is_a? ActiveRecord::Base
+				rescue
+				end
 			end
 
-			if valid 
+			if valid
 				@authable_models << klass
 			else
 				print "acts_as_api_authable: Warning: Invalid class type #{klass.to_s}\n"
@@ -29,6 +32,6 @@ class ActsAsApiAuthable::Config
 		if @authable_models.empty?
 			print "acts_as_api_authable: Error: No valid models supplied.\n"
 			return
-		end	
+		end
 	end
 end
