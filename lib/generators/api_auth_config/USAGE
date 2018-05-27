@@ -1,8 +1,0 @@
-Description:
-    This will generate the basic config required for api auth
-
-Example:
-    rails generate api_auth_config
-
-    This will create:
-        <rails_root>/config/initializers/api_authable.rb

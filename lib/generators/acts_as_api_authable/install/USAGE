@@ -1,0 +1,8 @@
+Description:
+    Creates a default configuration file for acts_as_api_authable
+
+Example:
+    rails generate acts_as_api_authable:install
+
+    This will create:
+        config/initializers/acts_as_api_authable.rb

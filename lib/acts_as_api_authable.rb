@@ -8,7 +8,8 @@ module ActsAsApiAuthable
       unsigned_requests_allowed: false,
       max_request_age: 60,
       max_clock_skew: 5,
-      authable_models: []
+      authable_models: [],
+      allowed_types: [:signature, :http_only_cookie],
     })
 
     yield config
