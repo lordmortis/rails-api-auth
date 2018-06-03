@@ -15,15 +15,48 @@ module ActsAsApiAuthable
     end
 
     def create
-      print "I require no auth"
+      params = create_params
 
-      render json: { nothing: "create" }
+      errors = {}
+      [:resource, :identifier, :password].each do |param|
+        unless params.has_key? param
+          errors[param] = "parameter is missing"
+        end
+      end
+
+      unless errors.empty?
+        render json: errors.to_json, status: :bad_request
+        return
+      end
+
+      authable = nil
+
+      begin
+        res = params[:resource].capitalize.constantize
+        if ActsAsApiAuthable.Configuration.authable_models.include? res
+          authable = res.auth(params[:identifier], params[:password])
+        end
+      rescue NameError => e
+
+      end
+
+      if authable != nil
+        render json: { authable: "woot" }
+      else
+        render json: nil, status: :unauthorized
+      end
     end
 
     def destroy
       print "I require existing auth"
 
       render json: { nothing: "destroy" }
+    end
+
+    private
+
+    def create_params
+      params.permit [:resource, :identifier, :password]
     end
 
   end
