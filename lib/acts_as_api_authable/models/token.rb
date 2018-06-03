@@ -24,12 +24,27 @@ module ActsAsApiAuthable
         save!
       end
 
+      def has_permissions?
+        return false if authable.blank?
+        authable.respond_to? :permissions
+      end
+
+      def permissions
+        return nil if authable.blank?
+        return nil unless authable.respond_to? :permissions
+        authable.permissions
+      end
+
       def self.expired
         where("expires_at < ?", Time.now)
       end
 
       def self.remove_expired!
         expired.destroy_all
+      end
+
+      def self.create_for_resource!(authable)
+        self.create(authable: authable)
       end
 
     private
@@ -42,10 +57,10 @@ module ActsAsApiAuthable
       end
 
       def set_expiry
-        if self.device
-          self.expires_at = SIGNATURE_EXPIRY.from_now
+        if self.http_only
+          self.expires_at = self.class::HTTP_ONLY_EXPIRY.from_now
         else
-          self.expires_at = HTTP_ONLY_EXPIRY.from_now
+          self.expires_at = self.class::SIGNATURE_EXPIRY.from_now
         end
       end
     end

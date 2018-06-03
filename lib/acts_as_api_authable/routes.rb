@@ -33,7 +33,7 @@ module ActionDispatch::Routing
       resources.each do |resource|
         mapping = ActsAsApiAuthable.define_resource(resource, {})
 
-        resource mapping.name, only: [], controller: mapping.controller, path: "" do
+        resource mapping.name, only: [], controller: mapping.controller, path: "", defaults: { class_name: mapping.class_name } do
           get   :list,    path: mapping.path_list
           get   :show,    path: mapping.path_show
           post  :create,  path: mapping.path_create

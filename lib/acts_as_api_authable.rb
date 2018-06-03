@@ -35,6 +35,11 @@ module ActsAsApiAuthable
       manager.default_strategies ActsAsApiAuthable.Configuration.allowed_types
      manager.failure_app = ActsAsApiAuthable::FailureApp
     end
+
+    if ActsAsApiAuthable.Configuration.allowed_types.include? :http_only_cookie
+      Rails.application.config.middleware.insert_after ActionDispatch::Callbacks, ActionDispatch::Cookies
+    end
+
   end
 
   def self.define_resource(resource, options)
