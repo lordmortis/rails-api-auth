@@ -3,9 +3,18 @@ require "warden"
 require "acts_as_api_authable/railtie"
 require "acts_as_api_authable/config"
 require "acts_as_api_authable/strategies"
+require "acts_as_api_authable/token_controller"
 require "acts_as_api_authable/failure_app"
+require "acts_as_api_authable/util/resource"
+
 
 module ActsAsApiAuthable
+  mattr_accessor :router_name
+  @@router_name = nil
+
+  mattr_reader :resources
+  @@resources = Hash.new
+
   def self.Configure
     config = OpenStruct.new({
       invalid_time_allowed: false,
@@ -26,6 +35,11 @@ module ActsAsApiAuthable
       manager.default_strategies ActsAsApiAuthable.Configuration.allowed_types
      manager.failure_app = ActsAsApiAuthable::FailureApp
     end
+  end
+
+  def self.define_resource(resource, options)
+    instance = ActsAsApiAuthable::Util::Resource.new(resource, options)
+    @@resources[instance.name] = instance
   end
 
   def self.Configuration
