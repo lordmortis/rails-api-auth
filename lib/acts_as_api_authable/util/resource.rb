@@ -1,7 +1,7 @@
 module ActsAsApiAuthable
   module Util
     class Resource
-      attr_reader :class_name, :singular
+      attr_reader :class_name, :singular, :klass
       attr_reader :path_names, :path, :path_prefix, :scoped_path,
         :sign_out_via
       attr_reader :format, :used_routes, :used_helpers, :failure_app, :router_name

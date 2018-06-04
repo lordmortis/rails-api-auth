@@ -2,14 +2,14 @@ module ActsAsApiAuthable
   module Warden
     class HttpOnlyCookieStrategy < ::Warden::Strategies::Base
       def valid?
-    #    errors.add(:id, "Not present or valid") unless cookie_id.present?
-        cookie_id.present?
-    #    errors.empty?
+        errors.add(:cookie_id, "Not present or valid") unless cookie_id.present?
+        errors.add(:cookie_resource, "Invalid type") unless resource != false
+        errors.empty?
       end
 
       def authenticate!
-        token = UserToken.find_by_id(cookie_id)
-        token_valid = !token.nil? && !token.device?
+        token = @resource.find_by_id(cookie_id)
+        token_valid = !token.nil? && token.http_only?
         unless token_valid
           secret = "JUNKSECRET"
         else
@@ -41,7 +41,7 @@ module ActsAsApiAuthable
 
         token.update_expiry! if token_valid
 
-        token_valid ? success!(token.user) : fail!('strategies.authentication_cookie.failed')
+        token_valid ? success!(token) : fail!('strategies.authentication_cookie.failed')
       end
 
       private
@@ -51,6 +51,7 @@ module ActsAsApiAuthable
         return if auth_value.type != :cookie
 
         @token_id = parse_uuid(auth_value[:id]) if auth_value.has_param?(:id)
+        @resource = setup_resource(auth_value[:resource]) if auth_value.has_param?(:resource)
       end
 
       def parse_uuid(uuidstring)
@@ -72,9 +73,20 @@ module ActsAsApiAuthable
         end
       end
 
+      def setup_resource(name)
+        sym = name.downcase.to_sym
+        return false unless ActsAsApiAuthable.resources.has_key? sym
+        ActsAsApiAuthable.resources[sym].klass
+      end
+
       def cookie_id
         parse_token unless @token_id.present?
         @token_id
+      end
+
+      def resource
+        parse_token unless @resource.present?
+        @resource
       end
     end
   end

@@ -9,15 +9,15 @@ module ActsAsApiAuthable
       @@unsigned_requests_allowed = false
 
       def valid?
-        errors.add(:id, "Not present or valid") unless token_id.present?
+        errors.add(:signature_id, "Not present or valid") unless token_id.present?
         unless token_time.present?
-          errors.add(:time, "Not present or valid")
+          errors.add(:signature_time, "Not present or valid")
         else
           unless token_in_time_window?(token_time)
-            errors.add(:time, "Not in a valid time window")
+            errors.add(:signature_time, "Not in a valid time window")
           end
         end
-        errors.add(:signature, "Not present or valid") unless token_signature.present?
+        errors.add(:signature_signature, "Not present or valid") unless token_signature.present?
         errors.empty?
       end
 
@@ -67,6 +67,7 @@ module ActsAsApiAuthable
         @token[:raw_time] = auth_value[:time]
         @token[:time] = parse_time(auth_value[:time]) if auth_value.has_param?(:time)
         @token[:signature] = auth_value[:signature]
+        @token[:resource] = setup_resource(auth_value[:resource]) if auth_value.has_param?(:resource)
       end
 
       def parse_uuid(uuidstring)
@@ -111,6 +112,11 @@ module ActsAsApiAuthable
         @token[:signature]
       end
 
+      def resource
+        parse_token unless @resource.present?
+        @token[:resource]
+      end
+
       def token_in_time_window?(time)
         return true if @@invalid_time_allowed
         oldest_time = (@@max_token_age + @@max_skew).seconds.ago
@@ -138,39 +144,10 @@ module ActsAsApiAuthable
         end
       end
 
-    public
-      def self.InvalidTimeAllowed
-        @@invalid_time_allowed
-      end
-
-      def self.InvalidTimeAllowed=(value)
-        @@invalid_time_allowed = value == true
-      end
-
-      def self.UnsignedRequestsAllowed
-        @@unsigned_requests_allowed
-      end
-
-      def self.UnsignedRequestsAllowed=(value)
-        @@unsigned_requests_allowed = value == true
-      end
-
-      def self.MaxAllowedSkew=(value)
-        int_value = value.to_i
-        @@max_skew = int_value if int_value >= 0
-      end
-
-      def self.MaxAllowedSkew
-        @@max_skew
-      end
-
-      def self.MaxTokenAge=(value)
-        int_value = value.to_i
-        @@max_token_age = int_value if int_value >= 0
-      end
-
-      def self.MaxTokenAge
-        @@max_token_age
+      def setup_resource(name)
+        sym = name.downcase.to_sym
+        return false unless ActsAsApiAuthable.resources.has_key? sym
+        ActsAsApiAuthable.resources[sym].klass
       end
     end
   end

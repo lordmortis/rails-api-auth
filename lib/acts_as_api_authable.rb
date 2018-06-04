@@ -6,7 +6,8 @@ module ActsAsApiAuthable
   autoload :Config, 'acts_as_api_authable/config'
 
   module Controllers
-    autoload :TokenController, 'acts_as_api_authable/controllers/token_controller'
+    autoload :TokenController,  'acts_as_api_authable/controllers/token_controller'
+    autoload :Helpers,           'acts_as_api_authable/controllers/helpers'
   end
 
   module Models
@@ -56,6 +57,9 @@ module ActsAsApiAuthable
       Rails.application.config.middleware.insert_after ActionDispatch::Callbacks, ActionDispatch::Cookies
     end
 
+    ActiveSupport.on_load(:action_controller) do
+      include ActsAsApiAuthable::Controllers::Helpers
+    end
   end
 
   def self.define_resource(resource, options)
