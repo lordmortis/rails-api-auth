@@ -42,7 +42,7 @@ module ActsAsApiAuthable
       end
 
       def controller
-        "/acts_as_api_authable/token"
+        "/acts_as_api_authable/controllers/token"
       end
 
     end

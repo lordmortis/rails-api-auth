@@ -1,14 +1,30 @@
-require "warden"
-
-require "acts_as_api_authable/railtie"
-require "acts_as_api_authable/config"
-require "acts_as_api_authable/strategies"
-require "acts_as_api_authable/token_controller"
-require "acts_as_api_authable/failure_app"
-require "acts_as_api_authable/util/resource"
-
+require 'warden'
+require 'acts_as_api_authable/routes'
+require 'acts_as_api_authable/version'
 
 module ActsAsApiAuthable
+  autoload :Config, 'acts_as_api_authable/config'
+
+  module Controllers
+    autoload :TokenController, 'acts_as_api_authable/controllers/token_controller'
+  end
+
+  module Models
+    autoload :Token, 'acts_as_api_authable/models/token'
+  end
+
+  module Warden
+    autoload :FailureApp,             'acts_as_api_authable/warden/failure_app'
+    autoload :Strategies,             'acts_as_api_authable/warden/strategies'
+    autoload :HttpOnlyCookieStrategy, 'acts_as_api_authable/warden/http_only_cookie_strategy'
+    autoload :SignatureStrategy,      'acts_as_api_authable/warden/signature_strategy'
+  end
+
+  module Util
+    autoload :Resource,             'acts_as_api_authable/util/resource'
+    autoload :AuthorizationHeader,  'acts_as_api_authable/util/authorization_header'
+  end
+
   mattr_accessor :router_name
   @@router_name = nil
 
@@ -31,9 +47,9 @@ module ActsAsApiAuthable
 
     return unless ActsAsApiAuthable.Configuration.valid?
 
-    Rails.application.config.middleware.insert_before Rack::Head, Warden::Manager do |manager|
+    Rails.application.config.middleware.insert_before Rack::Head, ::Warden::Manager do |manager|
       manager.default_strategies ActsAsApiAuthable.Configuration.allowed_types
-     manager.failure_app = ActsAsApiAuthable::FailureApp
+     manager.failure_app = ActsAsApiAuthable::Warden::FailureApp
     end
 
     if ActsAsApiAuthable.Configuration.allowed_types.include? :http_only_cookie

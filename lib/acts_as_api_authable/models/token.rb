@@ -4,7 +4,7 @@ module ActsAsApiAuthable
       extend ActiveSupport::Concern
 
       included do
-        ActsAsApiAuthable::Strategies.Setup
+        ActsAsApiAuthable::Warden::Strategies.Setup
 
         belongs_to :authable, polymorphic: true
 
