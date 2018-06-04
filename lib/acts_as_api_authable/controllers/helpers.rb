@@ -12,6 +12,7 @@ module ActsAsApiAuthable
       end
 
       def current_authable
+        return nil if warden.user.blank?
         warden.user.authable
       end
 

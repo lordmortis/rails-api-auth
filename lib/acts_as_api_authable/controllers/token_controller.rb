@@ -1,16 +1,16 @@
 module ActsAsApiAuthable
   module Controllers
     class TokenController < ActionController::API
+      before_action :authenticate!, except: [:create]
 
       def list
-        print "I require existing auth"
-        print "Show"
+        log_action :list, nil, current_session
 
         render json: { nothing: "list" }
       end
 
       def show
-        print "I require existing auth"
+        log_action :show, nil, current_session
 
         render json: { nothing: "show" }
       end
@@ -49,6 +49,7 @@ module ActsAsApiAuthable
 
         if authable.present?
           token = token_klass.create(authable: authable, http_only: type == :http_only_cookie)
+          log_action :create, token, nil
           self.send("create_render_#{type}", token)
         else
           render json: { error: "invalid identifier or password for the selected resource" }, status: :unauthorized
@@ -56,7 +57,7 @@ module ActsAsApiAuthable
       end
 
       def destroy
-        print "I require existing auth"
+        log_action :destroy, nil, current_session
 
         render json: { nothing: "destroy" }
       end
@@ -91,6 +92,13 @@ module ActsAsApiAuthable
 
       def create_params
         params.permit [:resource, :identifier, :password, :type, :class_name]
+      end
+
+      def log_action(type, session, current_session)
+        token_klass = params[:class_name].constantize
+        method_name = "log_#{type.to_s}"
+        return unless token_klass.respond_to? method_name
+        token_klass.send(method_name, session, request, current_session)
       end
 
     end
