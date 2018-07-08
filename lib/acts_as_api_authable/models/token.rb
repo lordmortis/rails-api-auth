@@ -24,6 +24,11 @@ module ActsAsApiAuthable
         save!
       end
 
+      def has_identifier?
+        return false if authable.blank?
+        authable.respond_to? :identifier
+      end
+
       def has_permissions?
         return false if authable.blank?
         authable.respond_to? :permissions

@@ -12,7 +12,7 @@ module ActsAsApiAuthable
       def show
         log_action :show, nil, current_session
 
-        render json: { nothing: "show" }
+        render json: token_serializer(current_session)
       end
 
       def create
@@ -69,6 +69,7 @@ module ActsAsApiAuthable
           created_at: token_record.created_at,
           expires_at: token_record.expires_at,
         }
+        data[:identifier] = token_record.authable.identifier if token_record.has_identifier?
         data[:permissions] = token_record.permissions if token_record.has_permissions?
         data[:device_name] = token_record.device_name unless token_record.http_only?
         data[:secret] = Base64.encode64(token_record.secret).strip if include_secret
