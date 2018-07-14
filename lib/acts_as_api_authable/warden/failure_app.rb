@@ -10,6 +10,9 @@ module ActsAsApiAuthable
         self.status = :unauthorized
         self.content_type  = "application/json"
         warden_errors = self.request.headers["warden.errors"]
+        if ActsAsApiAuthable.Configuration.allowed_types.include? :http_only_cookie
+          ActsAsApiAuthable::Util::Cookies.Destroy(request, response)
+        end
         errors = {}
         if warden_errors.blank?
         else

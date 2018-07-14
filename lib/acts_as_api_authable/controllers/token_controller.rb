@@ -77,11 +77,7 @@ module ActsAsApiAuthable
       end
 
       def create_render_http_only_cookie(token_record)
-        response["Set-Cookie"] = "secret=#{Rack::Utils.escape(Base64.encode64(token_record.secret).strip)}"
-        response["Set-Cookie"] += "; Expires=#{token_record.expires_at.gmtime.strftime("%a, %d-%b-%Y %H:%M:%S GMT") }"
-        response["Set-Cookie"] += "; domain=#{request.host}"
-        response["Set-Cookie"] += "; secure" if Rails.env.production?
-        response["Set-Cookie"] += "; HttpOnly"
+        ActsAsApiAuthable::Util::Cookies.Update(request, response, token_record)
         render json: token_serializer(token_record)
       end
 

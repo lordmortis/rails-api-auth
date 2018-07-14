@@ -39,9 +39,14 @@ module ActsAsApiAuthable
 
         token_valid = token_valid && Rack::Utils.secure_compare(secret, cookie_secret)
 
-        token.update_expiry! if token_valid
+        if !token_valid
+          fail!('strategies.authentication_cookie.failed')
+          return
+        end
 
-        token_valid ? success!(token) : fail!('strategies.authentication_cookie.failed')
+        token.update_expiry!
+        ActsAsApiAuthable::Util::Cookies.Update(request, headers, token)
+        success!(token)
       end
 
       private

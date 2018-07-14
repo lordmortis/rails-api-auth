@@ -22,8 +22,9 @@ module ActsAsApiAuthable
   end
 
   module Util
-    autoload :Resource,             'acts_as_api_authable/util/resource'
     autoload :AuthorizationHeader,  'acts_as_api_authable/util/authorization_header'
+    autoload :Cookies,              'acts_as_api_authable/util/cookies'
+    autoload :Resource,             'acts_as_api_authable/util/resource'
   end
 
   mattr_accessor :router_name
