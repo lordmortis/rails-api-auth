@@ -2,8 +2,6 @@ module ActsAsApiAuthable
   extend ActiveSupport::Concern
 
   included do
-    helper_method :warden, :signed_in?, :current_user
-
     prepend_before_action :authenticate!
   end
 
