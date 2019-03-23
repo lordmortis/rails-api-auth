@@ -59,6 +59,8 @@ module ActsAsApiAuthable
       def destroy
         log_action :destroy, nil, current_session
 
+        current_session.destroy
+
         render json: { nothing: "destroy" }
       end
 
