@@ -24,6 +24,10 @@ module ActsAsApiAuthable
         request.env['warden']
       end
 
+      def authenticate
+        warden.authenticate
+      end
+
       def authenticate!
         warden.authenticate!
       end
